@@ -23,7 +23,8 @@ public class CrawlJob implements Runnable{
         try {
             Query query = new Query(twitterCrawlerModel.getSearchQuery());
             query.setCount(100);
-            query.since("2022-02-01");
+            query.setSince(twitterCrawlerModel.getSince());
+            query.setUntil(twitterCrawlerModel.getUntil());
             QueryResult result;
             int i = 0;
             do {

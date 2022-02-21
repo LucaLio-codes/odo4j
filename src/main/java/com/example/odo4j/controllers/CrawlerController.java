@@ -7,6 +7,7 @@ import com.example.odo4j.repos.TwitterCrawlerRepository;
 import exceptions.JobNotFoundException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import util.CrawlerRunner;
@@ -34,24 +35,24 @@ public class CrawlerController {
         crawlerRunner = new CrawlerRunner();
     }
 
-    @GetMapping("/twitter")
+    @GetMapping(value = "/twitter", produces = MediaType.APPLICATION_JSON_VALUE)
     public CollectionModel<EntityModel<TwitterCrawlerModel>> all(){
         List<EntityModel<TwitterCrawlerModel>> jobs = repository.findAll().stream().map(assembler::toModel).collect(Collectors.toList());
         return CollectionModel.of(jobs, linkTo(methodOn(CrawlerController.class).all()).withSelfRel());
     }
 
-    @PostMapping("/twitter")
+    @PostMapping(value = "/twitter", produces = MediaType.APPLICATION_JSON_VALUE)
     public EntityModel<TwitterCrawlerModel> add(@RequestBody TwitterCrawlerModel newCrawler){
         return assembler.toModel(repository.save(newCrawler));
     }
 
-    @GetMapping("twitter/{id}")
+    @GetMapping(value = "twitter/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public EntityModel<TwitterCrawlerModel> one(@PathVariable long id){
         TwitterCrawlerModel crawler = repository.findById(id).orElseThrow(() -> new JobNotFoundException(id));
         return assembler.toModel(crawler);
     }
 
-    @PutMapping("twitter/{id}")
+    @PutMapping(value = "twitter/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public EntityModel<TwitterCrawlerModel> replaceJob(@PathVariable long id, @RequestBody TwitterCrawlerModel newCrawler){
         TwitterCrawlerModel crawler = repository.findById(id).map(job -> {
             job.setSearchQuery(newCrawler.getSearchQuery());
@@ -63,13 +64,13 @@ public class CrawlerController {
         return assembler.toModel(crawler);
     }
 
-    @DeleteMapping("twitter/{id}")
+    @DeleteMapping(value = "twitter/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> deleteJob(@PathVariable long id){
         repository.deleteById(id);
         return ResponseEntity.accepted().body(id);
     }
 
-    @GetMapping("start/{id}")
+    @GetMapping(value = "start/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?>  start(@PathVariable long id){
         TwitterCrawlerModel crawler = one(id).getContent();
 
@@ -78,7 +79,7 @@ public class CrawlerController {
         return ResponseEntity.accepted().body(id);
     }
 
-    @GetMapping("/stop/{id}")
+    @GetMapping(value = "/stop/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?>  stop(@PathVariable long id){
         TwitterCrawlerModel crawler = one(id).getContent();
         assert crawler != null;

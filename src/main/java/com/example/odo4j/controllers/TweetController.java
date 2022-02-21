@@ -10,6 +10,8 @@ import exceptions.JobNotFoundException;
 import exceptions.TweetNotFoundException;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,24 +34,24 @@ public class TweetController {
         this.crawlerAssembler = crawlerAssembler;
     }
 
-    @GetMapping("/tweets")
+    @GetMapping(value = "/tweets", produces = MediaType.APPLICATION_JSON_VALUE)
     public CollectionModel<EntityModel<Tweet>> all() {
         List<EntityModel<Tweet>> tweets = repository.findAll().stream().map(tweetAssembler::toModel).collect(Collectors.toList());
         return CollectionModel.of(tweets, linkTo(methodOn(TweetController.class).all()).withSelfRel());
     }
 
-    @PostMapping("/tweets")
+    @PostMapping(value = "/tweets", produces = MediaType.APPLICATION_JSON_VALUE)
     public EntityModel<Tweet> add(@RequestBody Tweet tweet){
         return tweetAssembler.toModel(tweet);
     }
 
-    @GetMapping("/tweets/{id}")
+    @GetMapping(value = "/tweets/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public EntityModel<Tweet> one(@PathVariable long id) {
         Tweet tweet = repository.findById(id).orElseThrow(() -> new TweetNotFoundException(id));
         return tweetAssembler.toModel(tweet);
     }
 
-    @GetMapping("/tweets-by-crawler/{id}")
+    @GetMapping(value = "/tweets-by-crawler/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public CollectionModel<EntityModel<Tweet>> byCrawler(@PathVariable long id) {
         TwitterCrawlerModel crawler = crawlerRepository.findById(id).orElseThrow(()-> new JobNotFoundException(id));
         List<EntityModel<Tweet>> tweets = repository.findAllByCrawler(crawler).stream().map(tweetAssembler::toModel).collect(Collectors.toList());
