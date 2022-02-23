@@ -31,16 +31,23 @@ public class CrawlJob implements Runnable{
             do {
                 result = twitter.search(query);
                 List<Status> tweets = result.getTweets();
+
                 for (Status tweet : tweets) {
                     if (!tweet.isRetweet()) {
                         tweetRepository.save(new Tweet(twitterCrawlerModel, tweet.getUser().getScreenName(), tweet.getText(), tweet.getCreatedAt().getTime()));
                     }
                 }
-                if (i == 99) {
-                    Thread.sleep(100);
-                    i = 0;
-                }else{
-                    i++;
+                RateLimitStatus rateLimit = result.getRateLimitStatus();
+                if (rateLimit != null){
+                    int remaining = rateLimit.getRemaining();
+                    int resetTime = rateLimit.getSecondsUntilReset();
+                    int sleep = 0;
+                    if (remaining == 0) {
+                        sleep = resetTime + 1; //adding 1 more seconds
+                    } else {
+                        sleep = (resetTime / remaining) + 1; //adding 1 more seconds
+                    }
+                    Thread.sleep(Math.max(sleep * 1000, 0));
                 }
 
             } while ((query = result.nextQuery()) != null && !Thread.currentThread().isInterrupted());

@@ -21,6 +21,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @Transactional
+@CrossOrigin
 public class CrawlerController {
 
     private final TwitterCrawlerRepository repository;
