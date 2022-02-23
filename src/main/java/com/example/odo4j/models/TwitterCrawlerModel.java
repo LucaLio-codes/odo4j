@@ -19,6 +19,7 @@ public class TwitterCrawlerModel {
     String searchQuery;
     String since;
     String until;
+    boolean running;
 
     public TwitterCrawlerModel(){
     }
@@ -28,6 +29,7 @@ public class TwitterCrawlerModel {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         this.since = LocalDate.now().minusMonths(1).format(formatter);
         this.until = LocalDate.now().format(formatter);
+        this.running = false;
     }
 
     public TwitterCrawlerModel(String query, String since, String until){
@@ -43,6 +45,7 @@ public class TwitterCrawlerModel {
             this.until = LocalDate.now().format(formatter);
         }finally {
             this.searchQuery = query;
+            this.running = false;
         }
     }
 
@@ -62,6 +65,10 @@ public class TwitterCrawlerModel {
         return until;
     }
 
+    public boolean isRunning() {
+        return running;
+    }
+
     public void setId(long id) {
         this.id = id;
     }
@@ -77,6 +84,10 @@ public class TwitterCrawlerModel {
 
     public void setUntil(String until) {
         this.until = until;
+    }
+
+    public void setRunning(boolean running) {
+        this.running = running;
     }
 }
 

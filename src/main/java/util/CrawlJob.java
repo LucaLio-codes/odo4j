@@ -19,6 +19,7 @@ public class CrawlJob implements Runnable{
 
     @Override
     public void run () {
+        twitterCrawlerModel.setRunning(true);
         Twitter twitter = new TwitterFactory().getInstance();
         try {
             Query query = new Query(twitterCrawlerModel.getSearchQuery());
@@ -45,6 +46,8 @@ public class CrawlJob implements Runnable{
             } while ((query = result.nextQuery()) != null && !Thread.currentThread().isInterrupted());
         } catch (TwitterException | InterruptedException e) {
             e.printStackTrace();
+        } finally {
+            twitterCrawlerModel.setRunning(false);
         }
     }
 }

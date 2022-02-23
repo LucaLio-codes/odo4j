@@ -71,20 +71,20 @@ public class CrawlerController {
     }
 
     @GetMapping(value = "start/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?>  start(@PathVariable long id){
+    public EntityModel<TwitterCrawlerModel> start(@PathVariable long id){
         TwitterCrawlerModel crawler = one(id).getContent();
 
         assert crawler != null;
         crawlerRunner.startCrawler(crawler, tweetRepository);
-        return ResponseEntity.accepted().body(id);
+        return assembler.toModel(crawler);
     }
 
     @GetMapping(value = "/stop/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?>  stop(@PathVariable long id){
+    public EntityModel<TwitterCrawlerModel> stop(@PathVariable long id){
         TwitterCrawlerModel crawler = one(id).getContent();
         assert crawler != null;
         crawlerRunner.interruptCrawler(crawler);
-        return ResponseEntity.accepted().body(id);
+        return assembler.toModel(crawler);
     }
 
 
